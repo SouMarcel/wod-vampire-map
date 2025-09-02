@@ -20,3 +20,27 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Servidor na porta ${PORT}`);
 });
+
+const Event = require('./models/Event');
+app.use(express.json()); // Para parses de JSON
+
+// Rota para listar eventos (para frontend)
+app.get('/api/events', async (req, res) => {
+  try {
+    const events = await Event.find();
+    res.json(events);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Rota para adicionar evento (para testes)
+app.post('/api/events', async (req, res) => {
+  try {
+    const event = new Event(req.body);
+    await event.save();
+    res.status(201).json(event);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
